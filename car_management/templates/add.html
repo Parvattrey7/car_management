@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AutoManage Pro | Add Vehicle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <nav class="bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 tracking-tight">
+                AutoManage<span class="font-light text-white">Pro</span>
+            </h1>
+            <div class="space-x-1">
+                <a href="/" class="px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition">Search</a>
+                <a href="/add" class="px-4 py-2 bg-indigo-600/20 text-indigo-400 rounded-lg font-semibold transition">Add Car</a>
+                <a href="/dashboard" class="px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-xl mx-auto mt-12 p-4">
+        <div class="bg-white p-10 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-extrabold text-slate-900">New Vehicle</h2>
+                <p class="text-slate-500 mt-2">Enter the details below to add to inventory.</p>
+            </div>
+            
+            <form id="addCarForm" class="space-y-5">
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Make (Brand)</label>
+                        <input type="text" id="make" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition" required placeholder="e.g. Maruti">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Model</label>
+                        <input type="text" id="model" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition" required placeholder="e.g. Swift">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-5">
+                    <div class="col-span-3 sm:col-span-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Year</label>
+                        <input type="number" id="year" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition" required placeholder="2024">
+                    </div>
+                    <div class="col-span-3 sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Color</label>
+                        <input type="text" id="color" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition" required placeholder="e.g. Midnight Blue">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Price (₹)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 font-bold">₹</span>
+                        <input type="number" id="price" class="w-full pl-8 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition" required placeholder="650000">
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full mt-6 bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-xl font-bold tracking-wide hover:from-indigo-600 hover:to-cyan-600 transition-all shadow-lg hover:shadow-indigo-500/30">
+                    Add to Inventory
+                </button>
+            </form>
+            <div id="msg" class="mt-6 text-center hidden px-4 py-3 rounded-xl text-sm font-bold"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('addCarForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgEl = document.getElementById('msg');
+            msgEl.classList.add('hidden');
+            
+            const carData = {
+                make: document.getElementById('make').value,
+                model: document.getElementById('model').value,
+                year: parseInt(document.getElementById('year').value),
+                price: parseFloat(document.getElementById('price').value),
+                color: document.getElementById('color').value
+            };
+
+            const res = await fetch('/api/cars/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(carData)
+            });
+
+            msgEl.classList.remove('hidden');
+            if(res.ok) {
+                msgEl.innerText = "✓ Vehicle successfully added to inventory.";
+                msgEl.className = "mt-6 text-center block px-4 py-3 rounded-xl text-sm font-bold bg-emerald-50 text-emerald-600 border border-emerald-100";
+                document.getElementById('addCarForm').reset();
+            } else {
+                msgEl.innerText = "✕ Failed to add vehicle. Please check inputs.";
+                msgEl.className = "mt-6 text-center block px-4 py-3 rounded-xl text-sm font-bold bg-red-50 text-red-600 border border-red-100";
+            }
+        });
+    </script>
+</body>
+</html>
